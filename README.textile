@@ -2,22 +2,39 @@ h1. Wordpress_CI
 
 h4. Version 0.1, February 3, 2013
 
-This repository will allow you to place a CodeIgniter Application within a Wordpress directory and use Wordpress functions within your CodeIgniter app.Creates a new function (ci_site_url) to avoid collisions with Wordpress' site_url function and walks through how to set up Wordpress so that it doesn't mangle CodeIgniter's cookies (if sessions are used).
+This repository will allow you to place a CodeIgniter Application _within_ a Wordpress directory and use Wordpress functions within your CodeIgniter app.Creates a new function (ci_site_url) to avoid collisions with Wordpress' site_url function and walks through how to set up Wordpress so that it doesn't mangle CodeIgniter's cookies (if sessions are used). Most other solutions require you to place the application and system directories in the site root; this allows you to keep Wordpress and Codeigniter separate! 
 
 h2. Setup
 
+* Link to the Wordpress load file (wp-load.php) immediately before calling the CI bootstrap file in your CI/index.php directory (see below)
 * Add the application/helpers/MY_url_helper.php to your CodeIgniter App.
 * Change all instances of site_url() in your application directory to ci_site_url; *do NOT update anything in the system directory*
 ** In general, updating application/views, application/controllers, application/models will do.
 * If using sessions, update Wordpress per the instructions under the Sessions Section.
 
-h2.  Sessions
+h3. Add Wordpress Load file to CIs index.php
+
+@/*@
+@* --------------------------------------------------------------------@
+@* LOAD THE BOOTSTRAP FILE@
+@* --------------------------------------------------------------------@
+@*@
+@* And away we go...@
+@*@
+@*/@
+@//Load Wordpress file.@
+@require_once('/Server/path/to/wp-load.php');@
+@require_once BASEPATH.'core/CodeIgniter.php';@
+@/* End of file index.php */@
+
+
+h3.  Sessions
 
 Unfortunately, Wordpress loops through your $_COOKIE global and applies its "add_magic_quotes" which renders CI's COOKIE useless and one or more cookies will be created on each page load.
 
 At this point, my solution is to edit the core file wp-includes/load.php, but there is probably a more elegant solution.
 
-h4. In wp-includes/load.php
+h5. In wp-includes/load.php
 
 On about line 26, add your CI cookie to the no_unset array. I'm using the default ci_session key created by CI, but replace this with your own.
 
