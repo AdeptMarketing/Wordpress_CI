@@ -1,4 +1,5 @@
 h1. Wordpress_CI
+
 h4. Version 0.1, February 3, 2013
 
 This repository will allow you to place a CodeIgniter Application within a Wordpress directory and use Wordpress functions within your CodeIgniter app.Creates a new function (ci_site_url) to avoid collisions with Wordpress' site_url function and walks through how to set up Wordpress so that it doesn't mangle CodeIgniter's cookies (if sessions are used).
@@ -7,18 +8,18 @@ h2. Setup
 
 * Add the application/helpers/MY_url_helper.php to your CodeIgniter App.
 * Change all instances of site_url() in your application directory to ci_site_url; *do NOT update anything in the system directory*
-** In general, updating application/views, application/controllers, application/models will do. 
+** In general, updating application/views, application/controllers, application/models will do.
 * If using sessions, update Wordpress per the instructions under the Sessions Section.
 
 h2.  Sessions
 
 Unfortunately, Wordpress loops through your $_COOKIE global and applies its "add_magic_quotes" which renders CI's COOKIE useless and one or more cookies will be created on each page load.
 
-At this point, my solution is to edit the core file wp-includes/load.php, but there is probably a more elegant solution. 
+At this point, my solution is to edit the core file wp-includes/load.php, but there is probably a more elegant solution.
 
 h4. In wp-includes/load.php
 
-On about line 26, add your CI cookie to the no_unset array. I'm using the default ci_session key created by CI, but replace this with your own. 
+On about line 26, add your CI cookie to the no_unset array. I'm using the default ci_session key created by CI, but replace this with your own.
 
 @$no_unset = array( 'GLOBALS', '_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_ENV', '_FILES', 'table_prefix','ci_session' );@
 
@@ -31,14 +32,14 @@ To prevent Wordpress from mangling your CI cookie, scroll down to about Line 520
 @*/@
 @function ci_ignore_magic_quotes($value,$key)@
 @{@
-@	if($key != "ci_session")@
-@	{@
-@		stripslashes_deep($value);@
-@	}@
+@if($key != "ci_session")@
+@{@
+@stripslashes_deep($value);@
+@}@
 @}@
 
-Finally, comment out the following lines inside the wp_magic_quotes function and add a reference to the above ci_ignore_magic_quotes function. 
+Finally, comment out the following lines inside the wp_magic_quotes function and add a reference to the above ci_ignore_magic_quotes function.
 
-@       array_walk($_COOKIE, 'ci_ignore_magic_quotes');@
-@        //$_COOKIE = add_magic_quotes( $_COOKIE );@
+@array_walk($_COOKIE, 'ci_ignore_magic_quotes');@
+@//$_COOKIE = add_magic_quotes( $_COOKIE );@
 
