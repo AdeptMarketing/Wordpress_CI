@@ -1,16 +1,20 @@
-h1. Wordpress_CI
+h1. Wordpress/Codeigniter Integration
 
 h4. Version 0.1, February 3, 2013
 
-This repository will allow you to place a CodeIgniter Application _within_ a Wordpress directory and use Wordpress functions within your CodeIgniter app.Creates a new function (ci_site_url) to avoid collisions with Wordpress' site_url function and walks through how to set up Wordpress so that it doesn't mangle CodeIgniter's cookies (if sessions are used). Most other solutions require you to place the application and system directories in the site root; this allows you to keep Wordpress and Codeigniter separate! 
+This repository will allow you to place a CodeIgniter Application _within_ a Wordpress directory and use Wordpress functions in your CodeIgniter app.  A common use is to have consistent navigation within the CI app and Wordpress site.  The helper file "namespaces" CIs site_url function (ci_site_url) to avoid collisions with Wordpress' site_url function.  
+
+If CI sessions are used, you can use the wp-load.php file so that Wordpress doesn't mangle CodeIgniter's cookies.
+
+Most other solutions require you to place the application and system directories in the site root; this allows you to keep Wordpress and Codeigniter separate!
 
 h2. Setup
 
-* Link to the Wordpress load file (wp-load.php) immediately before calling the CI bootstrap file in your CI/index.php directory (see below)
+* Include the Wordpress load file (wp-load.php) immediately before calling the CI bootstrap file in your CI/index.php directory (see below)
 * Add the application/helpers/MY_url_helper.php to your CodeIgniter App.
-* Change all instances of site_url() in your application directory to ci_site_url; *do NOT update anything in the system directory*
+* %{color:red}Important!: Change all instances of site_url() in your application directory to ci_site_url;% *do NOT update anything in the system directory*
 ** In general, updating application/views, application/controllers, application/models will do.
-* If using sessions, update Wordpress per the instructions under the Sessions Section.
+* (OPTIONAL) If using CodeIgniter's Session Library, update Wordpress per the instructions under the Sessions Section.
 
 h3. Add Wordpress Load file to CIs index.php
 
@@ -30,9 +34,9 @@ h3. Add Wordpress Load file to CIs index.php
 
 h3.  Sessions
 
-Unfortunately, Wordpress loops through your $_COOKIE global and applies its "add_magic_quotes" which renders CI's COOKIE useless and one or more cookies will be created on each page load.
+Unfortunately, Wordpress loops through your $_COOKIE global and applies its "add_magic_quotes" function, which renders CI's COOKIE useless; one or more CI cookies will be created on each page load.
 
-At this point, my solution is to edit the core file wp-includes/load.php, but there is probably a more elegant solution.
+*KLUDGE:* At this point, my solution is to edit the core file wp-includes/load.php, but there is probably a more elegant solution.
 
 h5. In wp-includes/load.php
 
